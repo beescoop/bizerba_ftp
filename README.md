@@ -1,4 +1,4 @@
-# bizerba-ftp
+# Bizerba FTP
 
 Script that download files needed by the Bizerba scales on an FTP server
 
@@ -8,16 +8,22 @@ This was created for BEES coop.
 
 Install Python 3.
 
-Install dependencies:
+Install dependencies :
+
+### On Windows
+
+    > C:\Python34\python.exe -m pip install configparser
+
+### On others
 
     $ pip install configparser
 
 ## Run
 
-### On windows
+### On Windows
 
-    bizerba.bat
+    > bizerba.bat
 
-### On GNU/Linux
+### On others
 
     $ python3 bizerba_ftp.py
