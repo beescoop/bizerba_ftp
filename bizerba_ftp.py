@@ -2,7 +2,7 @@
 # coding: utf-8
 
 
-"""Save file to a server.
+"""Download files needed by the Bizerba scales from an FTP server.
 
 Autor:
     Rémy Taymans <remytaymans@gmail.com>
