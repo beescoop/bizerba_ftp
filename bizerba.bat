@@ -1,2 +1,2 @@
 @echo off
-C:\Python27\python script_bizerba.py 
+C:\Python34\python.exe bizerba_ftp.py 

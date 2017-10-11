@@ -1,4 +1,4 @@
-#! python
+#! python3
 # coding: utf-8
 
 
@@ -51,7 +51,7 @@ def main():
     config = get_config()
 
     # Connect to FTP
-    print 'Open connection with FTP server'
+    print('Open connection with FTP server')
     ftp = FTP(config['ftp'].get('address'))
     ftp.login(
         user=config['ftp'].get('user'),
@@ -63,10 +63,10 @@ def main():
 
     try:
         ftp.quit()
-        print 'Quit connection'
+        print('Quit connection')
     except e:
         ftp.close()
-        print 'Close connection'
+        print('Close connection')
 
 
 def get_config(config_filename=CONFIG_FILENAME):
@@ -104,7 +104,7 @@ def get_csv_files(ftp, config, move_csv_to_backup=True):
     """
     # Change local working directory to CSV import directory
     os.chdir(config['local'].get('csv_dir'))
-    print 'Working in %s directory' % os.getcwd()
+    print('Working in %s directory' % os.getcwd())
 
     # Get CSV files
     ftp.cwd(config['ftp'].get('csv_dir'))
@@ -113,11 +113,11 @@ def get_csv_files(ftp, config, move_csv_to_backup=True):
     files = keep_only_csv(files)
 
     for f in files:
-        print 'Writing %s' % f
+        print('Writing %s' % f)
         get_text_file_from_ftp(ftp, f)
-        print 'Move %s to %s/%s' % (f,
+        print('Move %s to %s/%s' % (f,
                                     config['ftp'].get('backup_csv_dir'),
-                                    f)
+                                    f))
         if move_csv_to_backup:
             ftp.rename(
                 f,
@@ -131,7 +131,7 @@ def get_image_files(ftp, config):
     """
     # Change local working directory to image import directory
     os.chdir(config['local'].get('image_dir'))
-    print 'Working in %s directory' % os.getcwd()
+    print('Working in %s directory' % os.getcwd())
 
     # Get images
     ftp.cwd(config['ftp'].get('image_dir'))
@@ -139,7 +139,7 @@ def get_image_files(ftp, config):
     files = remove_hidden_files(files)
 
     for f in files:
-        print 'Writing %s' % f
+        print('Writing %s' % f)
         get_binary_file_from_ftp(ftp, f)
 
 
