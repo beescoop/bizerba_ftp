@@ -1,3 +1,6 @@
+# bizerba_ftp configuration file
+# /!\ WARNING: do not add trailing slash at the end of dir path !
+
 [ftp]
 address = domain-ftp.tld
 user = user_for_ftp_connection
