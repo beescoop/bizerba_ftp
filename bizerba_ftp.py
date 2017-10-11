@@ -52,10 +52,10 @@ def main():
 
     # Connect to FTP
     print('Open connection with FTP server')
-    ftp = FTP(config['ftp'].get('address'))
+    ftp = FTP(config['ftp'].get('address').strip('"'))
     ftp.login(
-        user=config['ftp'].get('user'),
-        passwd=config['ftp'].get('password')
+        user=config['ftp'].get('user').strip('"'),
+        passwd=config['ftp'].get('password').strip('"')
     )
 
     get_csv_files(ftp, config)
@@ -103,11 +103,11 @@ def get_csv_files(ftp, config, move_csv_to_backup=True):
     backup dir.
     """
     # Change local working directory to CSV import directory
-    os.chdir(config['local'].get('csv_dir'))
+    os.chdir(config['local'].get('csv_dir').strip('"'))
     print('Working in %s directory' % os.getcwd())
 
     # Get CSV files
-    ftp.cwd(config['ftp'].get('csv_dir'))
+    ftp.cwd(config['ftp'].get('csv_dir').strip('"'))
     files = ftp.nlst()
     files = remove_hidden_files(files)
     files = keep_only_csv(files)
@@ -115,13 +115,20 @@ def get_csv_files(ftp, config, move_csv_to_backup=True):
     for f in files:
         print('Writing %s' % f)
         get_text_file_from_ftp(ftp, f)
-        print('Move %s to %s/%s' % (f,
-                                    config['ftp'].get('backup_csv_dir'),
-                                    f))
         if move_csv_to_backup:
+            print(
+                'Move %s to %s/%s' % (
+                    f,
+                    config['ftp'].get('backup_csv_dir').strip('"'),
+                    f
+                )
+            )
             ftp.rename(
                 f,
-                '%s/%s' % (config['ftp'].get('backup_csv_dir'), f)
+                '%s/%s' % (
+                    config['ftp'].get('backup_csv_dir').strip('"'),
+                    f
+                )
             )
 
 
@@ -130,11 +137,11 @@ def get_image_files(ftp, config):
     server into the right local dirctory.
     """
     # Change local working directory to image import directory
-    os.chdir(config['local'].get('image_dir'))
+    os.chdir(config['local'].get('image_dir').strip('"'))
     print('Working in %s directory' % os.getcwd())
 
     # Get images
-    ftp.cwd(config['ftp'].get('image_dir'))
+    ftp.cwd(config['ftp'].get('image_dir').strip('"'))
     files = ftp.nlst()
     files = remove_hidden_files(files)
 
