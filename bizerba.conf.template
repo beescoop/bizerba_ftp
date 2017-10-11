@@ -1,0 +1,11 @@
+[ftp]
+address = domain-ftp.tld
+user = user_for_ftp_connection
+password = secret_password
+csv_dir = "/foo/bar/csv"
+backup_csv_dir = "/foo/bar/csv/old"
+image_dir = "/foo/bar/image"
+
+[local]
+csv_dir = "c:/bizerba/retailconnect-odoo/import"
+image_dir = "c:/bizerba/retailconnect-odoo/import/image_import"
