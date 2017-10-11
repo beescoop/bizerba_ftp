@@ -154,7 +154,7 @@ def get_text_file_from_ftp(ftp, f):
     """Download a text file from an existing FTP connection.
     The transfer is in ASCII.
     """
-    with open(f, 'w') as local_file:
+    with open(f, 'w', encoding="utf-8") as local_file:
         ftp.retrlines(
             'RETR %s' % f,
             lambda s, w=local_file.write: w(s+'\n')
