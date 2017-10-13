@@ -25,8 +25,9 @@ Usage:
 """
 
 
-import os
 from ftplib import FTP
+import time
+import os
 
 import configparser
 
@@ -47,6 +48,10 @@ CONFIG_FILENAME = "bizerba.conf"
 def main():
     """Program start here"""
 
+    print(
+        "Running script on %s" % time.strftime("%Y-%m-%d %H:%M:%S")
+    )
+
     # Read config file
     config = get_config()
 
@@ -58,6 +63,10 @@ def main():
         passwd=config['ftp'].get('password').strip('"')
     )
 
+    # Set encoding
+    ftp.encoding = "cp1252"
+
+    # Get files and images
     get_csv_files(ftp, config)
     get_image_files(ftp, config)
 
@@ -152,9 +161,9 @@ def get_image_files(ftp, config):
 
 def get_text_file_from_ftp(ftp, f):
     """Download a text file from an existing FTP connection.
-    The transfer is in ASCII.
+    The transfer is in cp1252.
     """
-    with open(f, 'w', encoding="utf-8") as local_file:
+    with open(f, 'w', encoding="cp1252") as local_file:
         ftp.retrlines(
             'RETR %s' % f,
             lambda s, w=local_file.write: w(s+'\n')
