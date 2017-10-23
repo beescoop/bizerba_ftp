@@ -66,9 +66,9 @@ def main():
     # Set encoding
     ftp.encoding = "cp1252"
 
-    # Get files and images
-    get_csv_files(ftp, config)
+    # Get images frist than files
     get_image_files(ftp, config)
+    get_csv_files(ftp, config)
 
     try:
         ftp.quit()
