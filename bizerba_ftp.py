@@ -21,12 +21,13 @@ Usage:
         - ftp directory for image
         - local folder for csv
         - local folder for image
+        - location of the log file
     Then run this script.
 """
 
 
 from ftplib import FTP
-import time
+import logging
 import os
 
 import configparser
@@ -48,15 +49,21 @@ CONFIG_FILENAME = "bizerba.conf"
 def main():
     """Program start here"""
 
-    print(
-        "Running script on %s" % time.strftime("%Y-%m-%d %H:%M:%S")
-    )
-
     # Read config file
     config = get_config()
 
+    # Open config file
+    logfilename = config['log'].get('filename').strip('"'))
+    logging.basicConfig(
+        filename=logfilename,
+        format='%(asctime)s - %(levelname)s : %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+
+    logging.info("Starts running script")
+
     # Connect to FTP
-    print('Open connection with FTP server')
+    logging.info('Open connection with FTP server')
     ftp = FTP(config['ftp'].get('address').strip('"'))
     ftp.login(
         user=config['ftp'].get('user').strip('"'),
@@ -72,10 +79,10 @@ def main():
 
     try:
         ftp.quit()
-        print('Quit connection')
+        logging.info('Quit connection')
     except e:
         ftp.close()
-        print('Close connection')
+        logging.info('Close connection')
 
 
 def get_config(config_filename=CONFIG_FILENAME):
@@ -113,7 +120,7 @@ def get_csv_files(ftp, config, move_csv_to_backup=True):
     """
     # Change local working directory to CSV import directory
     os.chdir(config['local'].get('csv_dir').strip('"'))
-    print('Working in %s directory' % os.getcwd())
+    logging.info('Working in %s directory', os.getcwd())
 
     # Get CSV files
     ftp.cwd(config['ftp'].get('csv_dir').strip('"'))
@@ -122,15 +129,14 @@ def get_csv_files(ftp, config, move_csv_to_backup=True):
     files = keep_only_csv(files)
 
     for f in files:
-        print('Writing %s' % f)
+        logging.info('Writing %s', f)
         get_text_file_from_ftp(ftp, f)
         if move_csv_to_backup:
-            print(
-                'Move %s to %s/%s' % (
-                    f,
-                    config['ftp'].get('backup_csv_dir').strip('"'),
-                    f
-                )
+            logging.info(
+                'Move %s to %s/%s',
+                f,
+                config['ftp'].get('backup_csv_dir').strip('"'),
+                f
             )
             ftp.rename(
                 f,
@@ -147,7 +153,7 @@ def get_image_files(ftp, config):
     """
     # Change local working directory to image import directory
     os.chdir(config['local'].get('image_dir').strip('"'))
-    print('Working in %s directory' % os.getcwd())
+    logging.info('Working in %s directory', os.getcwd())
 
     # Get images
     ftp.cwd(config['ftp'].get('image_dir').strip('"'))
@@ -155,7 +161,7 @@ def get_image_files(ftp, config):
     files = remove_hidden_files(files)
 
     for f in files:
-        print('Writing %s' % f)
+        logging.info('Writing %s', f)
         get_binary_file_from_ftp(ftp, f)
 
 
