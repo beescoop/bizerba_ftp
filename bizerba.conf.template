@@ -12,3 +12,6 @@ image_dir = "/foo/bar/image"
 [local]
 csv_dir = "c:/bizerba/retailconnect-odoo/import"
 image_dir = "c:/bizerba/retailconnect-odoo/import/image_import"
+
+[log]
+filename = "c:/bizerba_ftp/bizerba.log"
