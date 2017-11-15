@@ -44,6 +44,7 @@ __status__ = "Development"
 
 
 CONFIG_FILENAME = "bizerba.conf"
+LOG_FILENAME = "bizerba.log"
 
 
 def main():
@@ -53,12 +54,24 @@ def main():
     config = get_config()
 
     # Open config file
-    logfilename = config['log'].get('filename').strip('"'))
+    try:
+        logfilename = config.get('log', 'filename').strip('"')
+    except configparser.Error:
+        logfilename = LOG_FILENAME
     logging.basicConfig(
         filename=logfilename,
         format='%(asctime)s - %(levelname)s : %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
+
+    logging.info("Check the config file")
+
+    # Check config file
+    if not check_config(config):
+        logging.critical("The config file is not properly writed")
+        exit(1)
+
+    logging.info("Config file check passed successfully")
 
     logging.info("Starts running script")
 
@@ -80,7 +93,7 @@ def main():
     try:
         ftp.quit()
         logging.info('Quit connection')
-    except e:
+    except Exception:
         ftp.close()
         logging.info('Close connection')
 
@@ -90,6 +103,35 @@ def get_config(config_filename=CONFIG_FILENAME):
     config = configparser.ConfigParser()
     config.read(config_filename)
     return config
+
+
+def check_config(config):
+    """Check that the config file have all the required field"""
+    try:
+        config.get('ftp', 'address')
+        config.get('ftp', 'user')
+        config.get('ftp', 'password')
+        config.get('ftp', 'csv_dir')
+        config.get('ftp', 'backup_csv_dir')
+        config.get('ftp', 'image_dir')
+    except configparser.Error as err:
+        logging.error(err)
+        return False
+
+    try:
+        config.get('local', 'csv_dir')
+        config.get('local', 'image_dir')
+    except configparser.Error as err:
+        logging.error(err)
+        return False
+
+    try:
+        config.get('log', 'filename')
+    except configparser.Error as err:
+        logging.error(err)
+        return False
+
+    return True
 
 
 def remove_hidden_files(files):
