@@ -61,7 +61,8 @@ def main():
     logging.basicConfig(
         filename=logfilename,
         format='%(asctime)s - %(levelname)s : %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        datefmt='%Y-%m-%d %H:%M:%S',
+        level=20 # Loglevel INFO
     )
 
     logging.info("Check the config file")
