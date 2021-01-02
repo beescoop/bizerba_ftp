@@ -1,0 +1,142 @@
+#!/bin/env python3
+
+# Copyright 2020 Rémy Taymans <remytms@tsmail.eu>
+# License GPL-3.0 or later (https://www.gnu.org/licenses/gpl.html).
+
+"""This tool generate a file to delete product in bizerba scale."""
+
+import argparse
+import fileinput
+import sys
+import textwrap
+
+from pathlib import Path
+
+__version__ = "0.1.0"
+PROGNAME = "genbalbizdel"
+
+
+def main():
+    """Program starts here"""
+    parser = create_parser()
+    args = parser.parse_args()
+    del_pattern = "S#{sysbal_id}#{prod_id}#"
+    output_path = Path(args.output).expanduser().resolve()
+    excluded_ids = set()
+    included_ids = set()
+    generated_ids = set()
+    try:
+        excluded_ids = parse_listid_file(args.exclude)
+    except (OSError, ValueError, TypeError) as err:
+        print(
+            "Error: Can not parse exclude file: {}".format(err),
+            file=sys.stderr
+        )
+        sys.exit(1)
+    try:
+        included_ids = parse_listid_file(args.include)
+    except (OSError, ValueError, TypeError) as err:
+        print(
+            "Error: Can not parse exclude file: {}".format(err),
+            file=sys.stderr
+        )
+        sys.exit(1)
+    if args.generate_from_to:
+        generated_ids = set(
+            range(
+                args.generate_from_to[0], args.generate_from_to[1] + 1
+            )
+        )
+    ids_to_delete = (included_ids | generated_ids) - excluded_ids
+
+    with output_path.open(
+        mode="w", encoding="cp1252", newline="\r\n"
+    ) as output:
+        for prod_id in ids_to_delete:
+            print(
+                del_pattern.format(
+                    sysbal_id=args.balance_system_id, prod_id=prod_id
+                ),
+                file=output,
+            )
+
+
+def create_parser():
+    """Return parser for this script."""
+    parser = argparse.ArgumentParser(
+        prog=PROGNAME,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=textwrap.dedent(
+            """
+Generate a csv file that can be send to the bizerba scale in order to
+delete the product on the scale.
+
+If you want to generate a list for specific id, give it with --include
+or use --generate-from-to options.
+            """
+        ),
+    )
+    parser.add_argument(
+        "output",
+        metavar="OUTPUT",
+        help=(
+            "output file"
+        ),
+    )
+    parser.add_argument(
+        "--balance-system-id",
+        type=int,
+        metavar="ID",
+        required=True,
+        help=(
+            "the balance system id"
+        )
+    )
+    parser.add_argument(
+        "--include",
+        metavar="FILE",
+        help=(
+            "file containing one id per line. These id will be included "
+            "in the generated suppression file."
+        )
+    )
+    parser.add_argument(
+        "--exclude",
+        metavar="FILE",
+        help=(
+            "file containing one id per line. These id will be excluded "
+            "from the generated suppression file."
+        )
+    )
+    parser.add_argument(
+        "--generate-from-to",
+        type=int,
+        nargs=2,
+        metavar="ID_START ID_END",
+        help=(
+            "if specified, generate suppression from ID_START to ID_END "
+            "(included)"
+        )
+    )
+    parser.add_argument(
+        "--version", action="version",
+        version="%(prog)s {}".format(__version__)
+    )
+    return parser
+
+
+def parse_listid_file(filename):
+    """
+    Parse file as a file containing ids. It returns a set of ids.
+    """
+    ids = set()
+    if filename:
+        with fileinput.input(files=[filename]) as file:
+            for line in file:
+                if line.strip():
+                    ids.add(int(line.strip()))
+    return ids
+
+
+if __name__ == "__main__":
+    main()
