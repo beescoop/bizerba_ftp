@@ -55,7 +55,7 @@ def main():
         for prod_id in ids_to_delete:
             print(
                 del_pattern.format(
-                    sysbal_id=args.balance_system_id, prod_id=prod_id
+                    sysbal_id=args.product_scale_group, prod_id=prod_id
                 ),
                 file=output,
             )
@@ -84,12 +84,13 @@ or use --generate-from-to options.
         ),
     )
     parser.add_argument(
-        "--balance-system-id",
+        "--product-scale-group",
         type=int,
         metavar="ID",
         required=True,
         help=(
-            "the balance system id"
+            "the external ID of the product.scale.group associated to "
+            "the product id"
         )
     )
     parser.add_argument(
